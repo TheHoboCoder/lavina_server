@@ -7,10 +7,11 @@ EXPIRE_PERIOD_DAYS = 365
 class Command(BaseCommand):
     def handle(self, *args, **options):
         count = 0
-        for user in User.objects.filter(groups__name="regular_user").all():
-            if user.date_joined.date() + timedelta(days=EXPIRE_PERIOD_DAYS) == date.today():
-                user.is_active = False
-                user.save()
-                count += 1
+        for user in User.objects.filter(groups__name="regular_user", 
+                                        date_joined__lte=date.today() - 
+                                        timedelta(days=EXPIRE_PERIOD_DAYS)).all():
+            user.is_active = False
+            user.save()
+            count += 1
         self.stdout.write(f"expired {count} users") 
 

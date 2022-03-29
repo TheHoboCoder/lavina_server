@@ -3,7 +3,7 @@
 *.pot
 *.pyc
 __pycache__
-db.sqlite3
+db.lavina
 media
 
 # Backup files # 
@@ -96,6 +96,7 @@ Control.system-ca-bundle
 GitHub.sublime-settings 
 
 # Visual Studio Code # 
+.vscode/
 .vscode/* 
 !.vscode/settings.json 
 !.vscode/tasks.json 
@@ -103,5 +104,4 @@ GitHub.sublime-settings
 !.vscode/extensions.json 
 .history
 
-#ignore dev settings
-static/*
+
