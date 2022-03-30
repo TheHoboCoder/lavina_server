@@ -7,9 +7,6 @@ ALLOWED_HOSTS = ["172.21.210.1"]
 
 CSRF_TRUSTED_ORIGINS = ['https://projects.masu.edu.ru','https://172.21.210.1']
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
