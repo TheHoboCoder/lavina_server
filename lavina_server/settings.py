@@ -26,8 +26,7 @@ SECRET_KEY = 'django-insecure-zgcs0airkn^b!#5+94pi1ldh2gvrfm943ja8#p0424gx+az*x*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["172.21.210.1"]
 
 # Application definition
 
@@ -38,9 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     'lavina_auth',
     'rest_framework',
-    'corsheaders',
+    'rest_framework_gis',
 ]
 
 REST_FRAMEWORK = {
@@ -57,7 +57,6 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -65,35 +64,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:8000',
-]
+CSRF_TRUSTED_ORIGINS = ['https://projects.masu.edu.ru','https://172.21.210.1']
 
-
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOW_METHODS = (
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-)
-
-CORS_ALLOW_HEADERS = (
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-)
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
 
 ROOT_URLCONF = 'lavina_server.urls'
 
@@ -121,8 +95,12 @@ WSGI_APPLICATION = 'lavina_server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.lavina',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'lavina_db',
+        'USER' : 'lavina_user',
+        'PASSWORD' : '1qw#109_&Hl=',
+        'HOST' : 'localhost',
+        'PORT' : '5432',
     }
 }
 
@@ -171,5 +149,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 load_dotenv(find_dotenv())
 # Override production variables if DJANGO_DEVELOPMENT env variable is set 
-if os.getenv('DJANGO_SERVER'):
-    from .settings_server import *
+if os.getenv('DJANGO_DEVELOPMENT'):
+    from .settings_dev import *

@@ -3,6 +3,8 @@ from django.contrib.auth.models import Group
 from rest_framework.validators import UniqueValidator
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
+from .models import Place, PlaceType
+from django.contrib.gis.geos import GEOSGeometry
 
 class UserRegSerializer(serializers.ModelSerializer):
 
@@ -38,3 +40,11 @@ class UserRegSerializer(serializers.ModelSerializer):
         regular_user_group.user_set.add(user)
 
         return user
+
+class PlaceSerializer(serializers.ModelSerializer):
+    place_type = serializers.PrimaryKeyRelatedField(queryset=PlaceType.objects.all())
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+
+    class Meta:
+        model = Place
+        fields = ["id", "name", "owner", "place_type", "geometry"]

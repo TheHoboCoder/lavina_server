@@ -6,9 +6,13 @@ defusedxml==0.7.1
 Django==4.0.2
 django-cors-headers==3.11.0
 djangorestframework==3.13.1
+djangorestframework-gis==0.18
 httpie==3.0.2
 idna==3.3
 multidict==6.0.2
+mysqlclient==2.1.0
+Pillow==9.0.1
+psycopg2-binary==2.9.3
 Pygments==2.11.2
 PySocks==1.7.1
 python-dotenv==0.19.2
