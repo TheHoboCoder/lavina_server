@@ -18,7 +18,7 @@ def get_crsf(request):
 @require_POST
 def login_view(request):
     body_unicode = request.body.decode('utf-8')
-    data = body_unicode.loads(request.body)
+    data = json.loads(body_unicode)
     username = data.get('username')
     password = data.get('password')
 
