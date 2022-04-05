@@ -41,6 +41,21 @@ class UserRegSerializer(serializers.ModelSerializer):
 
         return user
 
+
+class UserSerializer(serializers.ModelSerializer):
+    fio = serializers.SerializerMethodField('get_fio')
+    group = serializers.SerializerMethodField('get_group')
+
+    def get_fio(self, obj):
+        return obj.first_name + obj.last_name
+
+    def get_group(self, obj):
+        return obj.groups.all().first()
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "fio", "group"]
+
 class PlaceSerializer(serializers.ModelSerializer):
     place_type = serializers.PrimaryKeyRelatedField(queryset=PlaceType.objects.all())
     owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())

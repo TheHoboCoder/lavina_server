@@ -1,58 +1,58 @@
 from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework import generics
+from rest_framework.views import APIView
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 import json
 from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
-from django.views.decorators.http import require_POST
 from .models import Place, PlaceType
 
-from .serializers import UserRegSerializer, PlaceSerializer
+from .serializers import UserRegSerializer, PlaceSerializer, UserSerializer
 
 def get_crsf(request):
     return JsonResponse({'X-CSRFToken': get_token(request)})
 
-@require_POST
-def login_view(request):
-    body_unicode = request.body.decode('utf-8')
-    data = json.loads(body_unicode)
-    username = data.get('username')
-    password = data.get('password')
+class LoginView(APIView):
+    permissions = [permissions.AllowAny]
 
-    if username is None or password is None:
-        return JsonResponse({'detail': 'Please provide username and password.'}, status=400)
+    def post(self, request, format=None):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        if username is None or password is None:
+            return Response({'detail': 'Please provide username and password.'}, status=400)
 
-    user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password)
+        if user is None:
+            return Response({'detail': 'Invalid credentials.'}, status=400)
 
-    if user is None:
-        return JsonResponse({'detail': 'Invalid credentials.'}, status=400)
+        login(request, user)
+        return Response({'detail': 'Successfully logged in.'})
 
-    login(request, user)
-    return JsonResponse({'detail': 'Successfully logged in.'})
 
-# TODO: change to drf api views
-def logout_view(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'detail': 'You\'re not logged in.'}, status=400)
+class LogoutView(APIView):
+    permissions = [permissions.IsAuthenticated]
 
-    logout(request)
-    return JsonResponse({'detail': 'Successfully logged out.'})
+    def get(self, request, format=None):
+        logout(request)
+        return Response({'detail': 'Successfully logged out.'})
 
-def whoami_view(request):
-    if not request.user.is_authenticated:
-        return JsonResponse({'isAuthenticated': False})
+class WhoamiView(APIView):
+    permissions = [permissions.IsAuthenticated]
 
-    return JsonResponse({'username': request.user.username})
+    def get(self, request, format=None):
+        return Response(UserSerializer(request.user).data)
 
+   
 class RegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = UserRegSerializer
 
 class ListCreatePlacesView(generics.ListCreateAPIView):
     serializer_class = PlaceSerializer
+    permission_classes = [permissions.DjangoModelPermissionsOrAnonReadOnly]
 
     def get_queryset(self):
         place_type_id = self.request.query_params.get('type_id')
