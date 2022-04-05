@@ -47,7 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
     group = serializers.SerializerMethodField('get_group')
 
     def get_fio(self, obj):
-        return obj.first_name + obj.last_name
+        return obj.first_name + ' '+ obj.last_name
 
     def get_group(self, obj):
         return str(obj.groups.all().first())
