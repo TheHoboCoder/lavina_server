@@ -16,7 +16,7 @@ def get_crsf(request):
     return JsonResponse({'X-CSRFToken': get_token(request)})
 
 class LoginView(APIView):
-    permissions = [permissions.AllowAny]
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, format=None):
         username = request.data.get('username')
@@ -33,14 +33,14 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permissions = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         logout(request)
         return Response({'detail': 'Successfully logged out.'})
 
 class WhoamiView(APIView):
-    permissions = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
         return Response(UserSerializer(request.user).data)
