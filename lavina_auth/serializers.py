@@ -50,7 +50,7 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.first_name + obj.last_name
 
     def get_group(self, obj):
-        return obj.groups.all().first()
+        return str(obj.groups.all().first())
 
     class Meta:
         model = User
