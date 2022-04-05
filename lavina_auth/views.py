@@ -57,6 +57,9 @@ class ListCreatePlacesView(generics.ListCreateAPIView):
     def get_queryset(self):
         place_type_id = self.request.query_params.get('type_id')
         return Place.objects.filter(place_type=place_type_id)
+    
+    def perform_create(self, serializer):
+        return serializer.save(owner=self.request.user)
 
 class UpdatePlacesView(generics.UpdateAPIView):
     serializer_class = PlaceSerializer
