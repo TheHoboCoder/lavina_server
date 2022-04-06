@@ -58,7 +58,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PlaceSerializer(serializers.ModelSerializer):
     place_type = serializers.PrimaryKeyRelatedField(queryset=PlaceType.objects.all())
-    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    owner = serializers.PrimaryKeyRelatedField(default=None, read_only=True)
 
     class Meta:
         model = Place
