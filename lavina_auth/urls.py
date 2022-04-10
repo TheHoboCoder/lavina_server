@@ -11,4 +11,5 @@ urlpatterns = [
     path('whoami', views.WhoamiView.as_view()),
     path('places', views.ListCreatePlacesView.as_view()),
     path('places/<pk>', views.UpdatePlacesView.as_view()),
+    path('elevation_around/<lat>/<lng>', views.ElevationAPI.as_view())
 ] 

@@ -10,6 +10,8 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
 from .models import Place, PlaceType
 
+from .elevation_basic import get_elevation_around
+
 from .serializers import UserRegSerializer, PlaceSerializer, UserSerializer
 
 def get_crsf(request):
@@ -63,3 +65,11 @@ class ListCreatePlacesView(generics.ListCreateAPIView):
 
 class UpdatePlacesView(generics.UpdateAPIView):
     serializer_class = PlaceSerializer
+
+class ElevationAPI(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        lat = float(kwargs.get('lat', '67'))
+        lng = float(kwargs.get('lng', '33'))
+        return Response(get_elevation_around(lat, lng))
