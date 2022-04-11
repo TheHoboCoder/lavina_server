@@ -1,3 +1,4 @@
+from string import hexdigits
 import struct
 from lavina_server.settings import DATA_ROOT
 
@@ -24,8 +25,7 @@ def coord_to_hgt_tile_indexes(lat, lng):
             (int(round(arclng / 3, 0))))
 
 def hgt_tile_indexes_to_coords(i, j):
-    magical_correction = 0.0008333333333325754
-    return ((1200 - i) * 3 / 3600 + CORE_LAT + magical_correction,
+    return ((1201 - i) * 3 / 3600 + CORE_LAT,
             j*3 / 3600 + CORE_LONG)
 
 def get_elevation_around(lat, lng):
@@ -54,6 +54,7 @@ def get_relief(place):
     topLeft = coord_to_hgt_tile_indexes(bounds[0], bounds[1])
     bottomRight = coord_to_hgt_tile_indexes(bounds[2], bounds[3])
     result = []
+    heighest_point = None 
     with open(FILENAME, "rb") as f:
         f.seek(((topLeft[0] - 1) * 1201 + (topLeft[1] - 1)) * 2)
         for i in range(bottomRight[0], topLeft[0]+1):
@@ -62,8 +63,11 @@ def get_relief(place):
                 val = struct.unpack('>h', f.read(2))
                 result[-1].append({'elevation': val[0] if val[0] != VOID_DATA else None,
                                    'coords': hgt_tile_indexes_to_coords(i, j)})
+                if heighest_point is None or \
+                   result[-1][-1]['elevation'] < heighest_point['elevation']:
+                     heighest_point = result[-1][-1]
             f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
-    return result
+    return (heighest_point, result)
 
 def constrain(val, min_val, max_val):    
     return min(max_val, max(min_val, val))
@@ -79,5 +83,6 @@ def get_around(x, y, relief_map):
             
 if __name__ == "__main__":
     lat, lng = 67.61916666666667, 33.75
+    print(get_elevation_around(lat, lng))
     # lat, lng = 67.618511, 33.750900
    

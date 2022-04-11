@@ -15,6 +15,9 @@ class Place(models.Model):
     place_type = models.ForeignKey('PlaceType', on_delete=models.RESTRICT)
     geometry = gis_models.PolygonField()
     relief_map = models.JSONField(blank=True, null=True)
+    heighest_point = gis_models.PointField(blank=True, null=True)
+    heighest_elevation = models.IntegerField(blank=True, null=True)
+
 
     # def save(self):
     #     self.relief_map = get_relief(self)
