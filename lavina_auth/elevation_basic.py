@@ -60,7 +60,7 @@ def get_relief(place):
             result.append([])
             for j in range(topLeft[1], bottomRight[1] + 1):
                 val = struct.unpack('>h', f.read(2))
-                result[-1].append({'elevation': val if val != VOID_DATA else None,
+                result[-1].append({'elevation': val[0] if val[0] != VOID_DATA else None,
                                    'coords': hgt_tile_indexes_to_coords(i, j)})
             f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
     return result
