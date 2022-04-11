@@ -79,7 +79,8 @@ def test(place):
     print(relief[1][-1][-1]['elevation'])
     elevation = get_elevation_around(relief[1][-1][-1]['coords'][0], 
                                      relief[1][-1][-1]['coords'][1])
-    print(elevation[1][1]['elevation'])
+    print(elevation["data"][1][1]['elevation'])
+    print(elevation["error"])
 
     
 
