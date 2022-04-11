@@ -56,15 +56,27 @@ def get_relief(place):
     result = []
     with open(FILENAME, "rb") as f:
         f.seek(((topLeft[0] - 1) * 1201 + (topLeft[1] - 1)) * 2)
-        for i in range(topLeft[0], bottomRight[0] + 1):
+        for i in range(bottomRight[0], topLeft[0]+1):
             result.append([])
             for j in range(topLeft[1], bottomRight[1] + 1):
                 val = struct.unpack('>h', f.read(2))
-                result[-1].append(val if val != VOID_DATA else None)
+                result[-1].append({'elevation': val if val != VOID_DATA else None,
+                                   'coords': hgt_tile_indexes_to_coords(i, j)})
             f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
     return result
-                
 
+def constrain(val, min_val, max_val):    
+    return min(max_val, max(min_val, val))
+
+def get_around(x, y, relief_map):
+    rows = relief_map[constrain(x - 1, 0, len(relief_map)) :
+                      constrain(x + 1, 0, len(relief_map))]
+    height = len(relief_map[0])
+    rows = [row[constrain(y - 1, 0, height) : 
+                constrain(y + 1, 0, height)]  for row in rows]
+    return rows
+            
+            
 if __name__ == "__main__":
     lat, lng = 67.61916666666667, 33.75
     # lat, lng = 67.618511, 33.750900
