@@ -63,7 +63,7 @@ def get_relief(bounds):
                 result[-1].append({'elevation': val[0] if val[0] != VOID_DATA else None,
                                    'coords': hgt_tile_indexes_to_coords(i, j)})
                 if heighest_point is None or \
-                   result[-1][-1]['elevation'] < heighest_point['elevation']:
+                   result[-1][-1]['elevation'] > heighest_point['elevation']:
                      heighest_point = result[-1][-1]
             f.seek((topLeft[1] + (1200 - bottomRight[1]))*2, 1)
     return (heighest_point, result)
