@@ -3,6 +3,8 @@ from lavina_server.settings import DATA_ROOT
 
 CORE_LAT = 67
 CORE_LONG = 33
+FILENAME = DATA_ROOT + "N67E033.hgt"
+VOID_DATA = -32768
 
 def get_sample(f, i, j):
     # TODO: неоптимизированное чтение файла, все время перемещаемся с начала, а не
@@ -28,10 +30,9 @@ def hgt_tile_indexes_to_coords(i, j):
 
 def get_elevation_around(lat, lng):
     indexes = coord_to_hgt_tile_indexes(lat, lng)
-    filename = DATA_ROOT + "N67E033.hgt"
     j = indexes[1] - 1
     data = []
-    with open(filename, "rb") as f:
+    with open(FILENAME, "rb") as f:
         while j < (indexes[1] + 2):
             i = indexes[0] - 1
             data.append([])
@@ -47,6 +48,22 @@ def get_elevation_around(lat, lng):
                    
     return {'data': data, 'error': coord_error}
 
+
+def get_relief(place):
+    bounds = place.geometry.extent
+    topLeft = coord_to_hgt_tile_indexes(bounds[0], bounds[1])
+    bottomRight = coord_to_hgt_tile_indexes(bounds[2], bounds[3])
+    result = []
+    with open(FILENAME, "rb") as f:
+        f.seek(((topLeft[0] - 1) * 1201 + (topLeft[1] - 1)) * 2)
+        for i in range(topLeft[0], bottomRight[0] + 1):
+            result.append([])
+            for j in range(topLeft[1], bottomRight[1] + 1):
+                val = struct.unpack('>h', f.read(2))
+                result[-1].append(val if val != VOID_DATA else None)
+            f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
+    return result
+                
 
 if __name__ == "__main__":
     lat, lng = 67.61916666666667, 33.75
