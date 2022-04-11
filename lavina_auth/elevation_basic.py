@@ -69,6 +69,20 @@ def get_relief(place):
             f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
     return (heighest_point, result)
 
+def test(place):
+    bounds = place.geometry.extent
+    relief = get_relief(place)
+    print(bounds[0], bounds[1], sep=' ')
+    print(relief[1][0][0]['coords'])
+    print(bounds[2], bounds[3], sep=' ')
+    print(relief[1][-1][-1]['coords'])
+    print(relief[1][-1][-1]['elevation'])
+    elevation = get_elevation_around(relief[1][-1][-1]['coords'][0], 
+                                     relief[1][-1][-1]['coords'][1])
+    print(elevation[1][1]['elevation'])
+
+    
+
 def constrain(val, min_val, max_val):    
     return min(max_val, max(min_val, val))
 
