@@ -49,14 +49,13 @@ def get_elevation_around(lat, lng):
     return {'data': data, 'error': coord_error}
 
 
-def get_relief(place):
-    bounds = place.geometry.extent
+def get_relief(bounds):
     topLeft = coord_to_hgt_tile_indexes(bounds[0], bounds[1])
     bottomRight = coord_to_hgt_tile_indexes(bounds[2], bounds[3])
     result = []
     heighest_point = None 
     with open(FILENAME, "rb") as f:
-        f.seek(((topLeft[0] - 1) * 1201 + (topLeft[1] - 1)) * 2)
+        f.seek(((bottomRight[0] - 1) * 1201 + (topLeft[1] - 1)) * 2)
         for i in range(bottomRight[0], topLeft[0]+1):
             result.append([])
             for j in range(topLeft[1], bottomRight[1] + 1):
@@ -66,23 +65,8 @@ def get_relief(place):
                 if heighest_point is None or \
                    result[-1][-1]['elevation'] < heighest_point['elevation']:
                      heighest_point = result[-1][-1]
-            f.seek((1201 + (1200 - bottomRight[1]))*2, 1)
+            f.seek((topLeft[1] + (1200 - bottomRight[1]))*2, 1)
     return (heighest_point, result)
-
-def test(place):
-    bounds = place.geometry.extent
-    relief = get_relief(place)
-    print(bounds[0], bounds[1], sep=' ')
-    print(relief[1][0][0]['coords'])
-    print(bounds[2], bounds[3], sep=' ')
-    print(relief[1][-1][-1]['coords'])
-    print(relief[1][-1][-1]['elevation'])
-    elevation = get_elevation_around(relief[1][-1][-1]['coords'][0], 
-                                     relief[1][-1][-1]['coords'][1])
-    print(elevation["data"][1][1]['elevation'])
-    print(elevation["error"])
-
-    
 
 def constrain(val, min_val, max_val):    
     return min(max_val, max(min_val, val))
