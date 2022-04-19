@@ -7,7 +7,7 @@ CORE_LONG = 33
 FILENAME = DATA_ROOT + "N67E033.hgt"
 VOID_DATA = -32768
 
-ALLOWED_REGION = (67, 33, 68, 34)
+ALLOWED_REGION = (67.546, 33.28, 68, 34)
 
 def get_sample(f, i, j):
     # TODO: неоптимизированное чтение файла, все время перемещаемся с начала, а не
