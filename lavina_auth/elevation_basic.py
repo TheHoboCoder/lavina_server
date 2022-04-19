@@ -7,6 +7,8 @@ CORE_LONG = 33
 FILENAME = DATA_ROOT + "N67E033.hgt"
 VOID_DATA = -32768
 
+ALLOWED_REGION = (67, 33, 68, 34)
+
 def get_sample(f, i, j):
     # TODO: неоптимизированное чтение файла, все время перемещаемся с начала, а не
     # c текущей позиции
@@ -79,7 +81,7 @@ def get_around(x, y, relief_map):
                 constrain(y + 1, 0, height)]  for row in rows]
     return rows
             
-            
+  
 if __name__ == "__main__":
     lat, lng = 67.61916666666667, 33.75
     print(get_elevation_around(lat, lng))

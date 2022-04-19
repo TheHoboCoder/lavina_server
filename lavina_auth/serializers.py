@@ -5,6 +5,7 @@ from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from .models import Place, PlaceType
 from django.contrib.gis.geos import GEOSGeometry
+from lavina_auth.elevation_basic import ALLOWED_REGION
 
 class UserRegSerializer(serializers.ModelSerializer):
 
@@ -59,6 +60,15 @@ class UserSerializer(serializers.ModelSerializer):
 class PlaceSerializer(serializers.ModelSerializer):
     place_type = serializers.PrimaryKeyRelatedField(queryset=PlaceType.objects.all())
     owner = serializers.PrimaryKeyRelatedField(default=None, read_only=True)
+
+    def validate_geometry(self, value):
+        extent = value.extent
+        if (extent[0] < ALLOWED_REGION[0] and \
+            extent[1] < ALLOWED_REGION[1]) or \
+           (extent[2] > ALLOWED_REGION[2] and \
+            extent[3] > ALLOWED_REGION[3]):
+            raise serializers.ValidationError("extent of geometry should be inside allowed region")
+        return value
 
     class Meta:
         model = Place

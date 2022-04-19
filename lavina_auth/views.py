@@ -10,12 +10,15 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
 from .models import Place, PlaceType
 
-from .elevation_basic import get_elevation_around
+from .elevation_basic import get_elevation_around, ALLOWED_REGION
 
 from .serializers import UserRegSerializer, PlaceSerializer, UserSerializer
 
 def get_crsf(request):
     return JsonResponse({'X-CSRFToken': get_token(request)})
+
+def get_allowed_region(request):
+    return JsonResponse({'allowed_region': ((ALLOWED_REGION[0], ALLOWED_REGION[1]),(ALLOWED_REGION[2], ALLOWED_REGION[3]))})
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
