@@ -72,4 +72,5 @@ class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
+        fields = '__all__'
         read_only_fields = ["id", "heighest_point", "heighest_elevation"]
