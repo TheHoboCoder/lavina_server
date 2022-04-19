@@ -72,5 +72,4 @@ class PlaceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Place
-        exclude = ['relief_map']
         read_only_fields = ["id", "heighest_point", "heighest_elevation"]
