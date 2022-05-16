@@ -9,7 +9,7 @@ from .models import Place
 from .permissions import AdminOrOwnerOrReadOnly
 
 from .elevation_basic import get_elevation_around, ALLOWED_REGION
-from .elevation import get_allowed_region, trace_path
+from .elevation import get_allowed_region as get_reg, trace_path
 
 from .serializers import UserRegSerializer, PlaceSerializer, UserSerializer
 
@@ -17,7 +17,7 @@ def get_crsf(request):
     return JsonResponse({'X-CSRFToken': get_token(request)})
 
 def get_allowed_region(request):
-    return JsonResponse({'allowed_region': get_allowed_region()})
+    return JsonResponse({'allowed_region': get_reg()})
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
