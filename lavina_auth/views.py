@@ -67,6 +67,7 @@ class ListCreatePlacesView(generics.ListCreateAPIView):
 class UpdatePlacesView(generics.UpdateAPIView):
     permission_classes = [AdminOrOwnerOrReadOnly]
     serializer_class = PlaceSerializer
+    queryset = Place.objects.all()
 
 class ElevationAPI(APIView):
     permission_classes = [permissions.IsAuthenticated]
