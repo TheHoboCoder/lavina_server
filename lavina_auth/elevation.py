@@ -22,7 +22,7 @@ def geo_from_coords(x, y, rst):
 
 def get_allowed_region():
     a_r = GDALRaster(FILE, write=False).extent
-    return ((a_r[0], a_r[1]),(a_r[2], a_r[3]))
+    return ((a_r[1], a_r[0]),(a_r[3], a_r[2]))
 
 def get_relief(bounds):
     rst = GDALRaster(FILE, write=False)
