@@ -2,13 +2,11 @@ from django.http import JsonResponse
 from rest_framework import permissions
 from rest_framework import generics
 from rest_framework.views import APIView
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-import json
 from django.middleware.csrf import get_token
 from django.contrib.auth import authenticate, login, logout
-from .models import Place, PlaceType
+from .models import Place
+from .permissions import AdminOrOwnerOrReadOnly
 
 from .elevation_basic import get_elevation_around, ALLOWED_REGION
 
@@ -67,6 +65,7 @@ class ListCreatePlacesView(generics.ListCreateAPIView):
         return serializer.save(owner=self.request.user)
 
 class UpdatePlacesView(generics.UpdateAPIView):
+    permission_classes = [AdminOrOwnerOrReadOnly]
     serializer_class = PlaceSerializer
 
 class ElevationAPI(APIView):
