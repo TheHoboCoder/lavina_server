@@ -12,5 +12,6 @@ urlpatterns = [
     path('places', views.ListCreatePlacesView.as_view()),
     path('allowed_region', views.get_allowed_region),
     path('places/<pk>', views.UpdatePlacesView.as_view()),
-    path('elevation_around/<lat>/<lng>', views.ElevationAPI.as_view())
+    path('elevation_around/<lat>/<lng>', views.ElevationAPI.as_view()),
+    path('exp_elevation/<lat>/<lng>/<fraction>', views.ExperimentalElevationAPI.as_view())
 ] 

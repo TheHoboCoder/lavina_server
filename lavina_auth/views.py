@@ -9,6 +9,7 @@ from .models import Place
 from .permissions import AdminOrOwnerOrReadOnly
 
 from .elevation_basic import get_elevation_around, ALLOWED_REGION
+from .elevation import get_allowed_region, trace_path
 
 from .serializers import UserRegSerializer, PlaceSerializer, UserSerializer
 
@@ -16,7 +17,7 @@ def get_crsf(request):
     return JsonResponse({'X-CSRFToken': get_token(request)})
 
 def get_allowed_region(request):
-    return JsonResponse({'allowed_region': ((ALLOWED_REGION[0], ALLOWED_REGION[1]),(ALLOWED_REGION[2], ALLOWED_REGION[3]))})
+    return JsonResponse({'allowed_region': get_allowed_region()})
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -76,3 +77,12 @@ class ElevationAPI(APIView):
         lat = float(kwargs.get('lat', '67'))
         lng = float(kwargs.get('lng', '33'))
         return Response(get_elevation_around(lat, lng))
+
+class ExperimentalElevationAPI(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        lat = float(kwargs.get('lat', '67'))
+        lng = float(kwargs.get('lng', '33'))
+        fraction = float(kwargs.get('fraction', '0.02'))
+        return Response(trace_path((lat, lng), 0, fraction))
