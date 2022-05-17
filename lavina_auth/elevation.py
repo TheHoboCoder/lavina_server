@@ -7,7 +7,7 @@ FILE = DATA_ROOT + "height_map.tif"
 # assuming file crs is 4326 (WGS84), otherwise will not work
 def coord_from_geo(lat, lng, rst):
     top_left = (rst.extent[3], rst.extent[0])
-    array_dim = (len(rst.bands[0].data()[0]), len(rst.bands[0].data()))
+    array_dim = (rst.bands[0].width, rst.bands[0].height)
     sec_per_width = (rst.extent[2] - rst.extent[0])*3600 / array_dim[0]
     sec_per_height = (rst.extent[3] - rst.extent[1])*3600 / array_dim[1]
     sec_rel_coords = (top_left[0] - lat) * 3600, (lng - top_left[1]) * 3600
@@ -24,16 +24,20 @@ def get_allowed_region():
     a_r = GDALRaster(FILE, write=False).extent
     return ((a_r[1], a_r[0]),(a_r[3], a_r[2]))
 
+def get_el(i, j, band):
+    return band.data(offset=(j, i), size=(1, 1))[0]
+
 def get_relief(bounds):
     rst = GDALRaster(FILE, write=False)
     topLeft = coord_from_geo(bounds[0], bounds[1], rst)
     bottomRight = coord_from_geo(bounds[2], bounds[3], rst)
     result = []
     heighest_point = None 
+    band = rst.bands[0]
     for i in range(bottomRight[0], topLeft[0]+1):
         result.append([])
         for j in range(topLeft[1], bottomRight[1] + 1):
-            val = rst.bands[0].data()[i][j]
+            val = get_el(i, j, band)
             result[-1].append({'elevation': val,
                                 'coords': geo_from_coords(i, j, rst)})
             if heighest_point is None or \
@@ -44,15 +48,17 @@ def get_relief(bounds):
 def constrain(val, min_val, max_val):    
     return min(max_val, max(min_val, val))
 
-def get_around(x, y, relief_map):
-    bounds_x = constrain(x - 1, 0, len(relief_map)), constrain(x + 1, 0, len(relief_map)) + 1
-    height = len(relief_map[0])
+
+def get_around(x, y, band):
+    bounds_x = constrain(x - 1, 0, band.width), constrain(x + 1, 0, band.width) + 1
+    height = band.height
     bounds_y = constrain(y - 1, 0, height), constrain(y + 1, 0, height) + 1
+    reg = band.data(offset=(bounds_x[0], bounds_y[0]), size=(3, 3))
     for i in range(bounds_x[0], bounds_x[1]):
         for j in range(bounds_y[0], bounds_y[1]):
             if i == x and j == y:
                 continue
-            yield (i, j), relief_map[i][j]
+            yield (i, j), get_el(i, j, band)
 
 def get_distance(latlng1, latlng2):
     lat_meters = abs(latlng1[0] - latlng2[0]) * 111.139
@@ -67,10 +73,10 @@ def get_sin_cos_angle(distance, elevation):
 
 def trace_path(start_point, mass, fraction):
     rst = GDALRaster(FILE, write=False)
-    data = rst.bands[0].data()
+    band = rst.bands[0]
     current_point = start_point
     coords = coord_from_geo(current_point[0], current_point[1], rst)
-    current_point = (coords, data[coords[0]][coords[1]])
+    current_point = (coords, get_el(coords[0], coords[1], band))
     count_same = 0
     next_point = None
     velocity = 0
@@ -78,7 +84,7 @@ def trace_path(start_point, mass, fraction):
     info = []
     while len(traced_path) < 1000:
 
-        for point in get_around(current_point[0][0], current_point[0][1], data):
+        for point in get_around(current_point[0][0], current_point[0][1], band):
             if next_point is None or point[1] < next_point[1]:
                 next_point = point
 
@@ -99,7 +105,7 @@ def trace_path(start_point, mass, fraction):
         # print(sin, cos)
         a = 9.8 * (sin - fraction*cos)
         if a < 0:
-            return traced_path, info, "fraction is too high and angle is low"
+            return traced_path, info, (current_point, next_point)
         # print(a)
         d = velocity**2 + 4 * distance * (a / 2)
         t = (sqrt(d) - velocity) / 2
